@@ -1,0 +1,6 @@
+LIBRARY UIAutomationLibrary.dll
+DESCRIPTION "UIAutomation prototype"
+EXPORTS
+	launchApp=launchApp @1
+	SimulateSwipe=SimulateSwipe @2
+VERSION 1.0
