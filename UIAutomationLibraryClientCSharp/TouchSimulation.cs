@@ -13,9 +13,11 @@ namespace UIAutomationLibraryClientCSharp
     class TouchSimulation
     {
 
-        public static int touchTimeResolution = 5;
+        public static int touchTimeResolution = 10;
 
         public static int touchHoldTime = 1000;
+
+        public static int contactsPerFrame = 10;
 
         public static void SimulateTap(Point point)
         {
@@ -63,7 +65,7 @@ namespace UIAutomationLibraryClientCSharp
             success = TouchInjector.InjectTouchInput(contacts.Length, contacts);
         }
 
-        public static void SimulateSwipe(Point start, Point end, int step = 1)
+        public static void SimulateSwipe(Point start, Point end, int duration)
         {
             PointerTouchInfo[] contacts = new PointerTouchInfo[1];
             contacts[0] = CreateDefaultPointerTouchInfo(start.X, start.Y, 2, 0);
@@ -77,34 +79,41 @@ namespace UIAutomationLibraryClientCSharp
             // Touch update
             contacts[0].PointerInfo.PointerFlags = PointerFlags.UPDATE | PointerFlags.INRANGE | PointerFlags.INCONTACT;
 
-            int steps = (int)Math.Sqrt(Math.Pow(start.X - end.X, 2) + Math.Pow(start.Y - end.Y, 2)) / step;
+            CubicBezier cb = new CubicBezier(0.95, 0.05, 0.795, 0.035); // easeInExpo
 
-            double deltaXRaw = (double)(end.X - start.X) / steps;
+            double frames = (duration / (touchTimeResolution + 0.3));
 
-            double deltaYRaw = (double)(end.Y - start.Y) / steps;
+            double delta = (double)1 / frames / contactsPerFrame;
 
-            double deltaX = 0;
-            double deltaY = 0;
+            int distanceX = end.X - start.X;
+            int distanceY = end.Y - start.Y;
+
+            int contactRadius = contacts[0].PointerInfo.PtPixelLocation.X - contacts[0].ContactArea.left;
+
+            double topFrame = Math.Ceiling(frames);
+
+            int contactsToSend = (int)(frames * contactsPerFrame);
 
             // Move contact
-            for (int i = 0; i < steps; ++i)
+            for (int i = 0; i < contactsToSend; ++i)
             {
-                deltaX += deltaXRaw;
-                deltaY += deltaYRaw;
-                contacts[0].Move((int)deltaX, (int)deltaY);
+                double travelPercent = cb.GetSplineValue(delta * i);
+                int deltaX = start.X + (int)(distanceX * travelPercent) - contacts[0].PointerInfo.PtPixelLocation.X;
+                int deltaY = start.Y + (int)(distanceY * travelPercent) - contacts[0].PointerInfo.PtPixelLocation.Y;
+                contacts[0].Move(deltaX, deltaY);
                 success = TouchInjector.InjectTouchInput(contacts.Length, contacts);
-                new ManualResetEvent(false).WaitOne(touchTimeResolution);
-                deltaX = deltaX - (int)deltaX;
-                deltaY = deltaY - (int)deltaY;
+                if ( i % contactsPerFrame == 0 )
+                    new ManualResetEvent(false).WaitOne(touchTimeResolution);
             }
 
-            if (deltaX != 0 || deltaY != 0)
+            if (contacts[0].PointerInfo.PtPixelLocation.X < end.X || contacts[0].PointerInfo.PtPixelLocation.Y < end.Y)
             {
-                contacts[0].PointerInfo.PtPixelLocation.X = end.X;
-                contacts[0].PointerInfo.PtPixelLocation.Y = end.Y;
+                int deltaX = end.X - contacts[0].PointerInfo.PtPixelLocation.X;
+                int deltaY = end.Y - contacts[0].PointerInfo.PtPixelLocation.Y;
+                contacts[0].Move(deltaX, deltaY);
                 success = TouchInjector.InjectTouchInput(contacts.Length, contacts);
-                new ManualResetEvent(false).WaitOne(touchTimeResolution);
             }
+
 
             // Release contact
             contacts[0].PointerInfo.PointerFlags = PointerFlags.UP;

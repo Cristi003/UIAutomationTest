@@ -57,7 +57,7 @@ namespace UIAutomationLibraryClientCSharp
             // Wait for app to initialize
             new ManualResetEvent(false).WaitOne(1000);
             //Automate.start(processId);
-            TouchSimulation.SimulateSwipe(new Point { X = 400, Y = 400 }, new Point { X = 800, Y = 800 });
+            TouchSimulation.SimulateSwipe(new Point { X = 1900, Y = 600 }, new Point { X = 100, Y = 600 }, 700);
             // Give time for app to finish any animation like snapping
             new ManualResetEvent(false).WaitOne(1000);
             TouchSimulation.SimulateTap(new Point { X = 500, Y = 600 });
@@ -73,7 +73,7 @@ namespace UIAutomationLibraryClientCSharp
         public static void OpenCharm()
         {
             TouchSimulation.SimulateSwipe(new Point { X = Screen.PrimaryScreen.Bounds.Right - 1, Y = Screen.PrimaryScreen.Bounds.Bottom / 2 }
-                , new Point { X = Screen.PrimaryScreen.Bounds.Right - 101, Y = Screen.PrimaryScreen.Bounds.Bottom / 2 });
+                , new Point { X = Screen.PrimaryScreen.Bounds.Right - 101, Y = Screen.PrimaryScreen.Bounds.Bottom / 2 }, 500);
         }
     }
 }

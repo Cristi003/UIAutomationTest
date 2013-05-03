@@ -116,6 +116,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NativeWrappers.cs" />
+    <Compile Include="TimingFunction.cs" />
     <Compile Include="TouchSimulation.cs" />
   </ItemGroup>
   <ItemGroup>
