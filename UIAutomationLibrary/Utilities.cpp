@@ -6,6 +6,7 @@
 #include <objbase.h>
 #include <Shobjidl.h>
 #include <atlbase.h>
+#include <vector>
 
 namespace UIAutomationLibrary {
     HRESULT Utilities::launchApp(const std::wstring& strAppUserModelId, PDWORD processId) {
@@ -25,6 +26,11 @@ namespace UIAutomationLibrary {
         }
         return hrResult;
     };
+
+    std::vector<HWND> Utilities::getWindows(DWORD processId)
+    {
+        return std::vector<HWND>();
+    }
 
     ApplicationActivationManager::ApplicationActivationManager() : IApplicationActivationManager()
     {

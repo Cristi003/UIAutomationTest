@@ -17,17 +17,13 @@ namespace UIAutomationLibraryClientCSharp
         //[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         //static extern IntPtr LoadLibrary(string lpFileName);
 
-        [DllImport("UIAutomationLibrary.dll", EntryPoint = "launchApp", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
-        //public static extern IntPtr launchApp(string appIdentifier, UIntPtr processId);
-        public static extern int launchApp([InAttribute()] [MarshalAs(UnmanagedType.LPWStr)] string strAppUserModelId, ref uint processId);
-
         [DllImport("UIAutomationLibrary.dll", EntryPoint = "SimulateSwipe", CallingConvention = CallingConvention.StdCall)]
         public static extern int SimulateSwipeNative();
 
         static int launchAppPInvoke(string appName, ref uint processId)
         {
             // PInvoke call on the native dll
-            return launchApp(appName, ref processId);
+            return Mine.launchApp(appName, ref processId);
         }
 
         static int launchAppCLIWrapper(string appName, ref uint processId)
@@ -46,13 +42,13 @@ namespace UIAutomationLibraryClientCSharp
             string appName = @"Microsoft.SDKSamples.GesturesApp.CS_8wekyb3d8bbwe!App";
             uint processId = 0;
             int result = 0;
-            //result = launchAppPInvoke(appName, ref processId);
-            //Console.WriteLine("Indirect PInvoke result : " + result + " -> App launched with process id " + processId);
+            result = Mine.launchApp(appName, ref processId); //launchAppPInvoke(appName, ref processId);
+            Console.WriteLine("Indirect PInvoke result : " + result + " -> App launched with process id " + processId);
             //result = launchAppCLIWrapper(appName, ref processId);
             //Console.WriteLine("Indirect C++/CLI Wrapper result : " + result + " -> App launched with process id " + processId);
-            IApplicationActivationManager appActiveManager = new ApplicationActivationManager();//Class not registered
-            result = appActiveManager.ActivateApplication(appName, null, ActivateOptions.None, out processId).ToInt32();
-            Console.WriteLine("Direct Com Wrapper result : " + result + " -> App launched with process id " + processId);
+            //IApplicationActivationManager appActiveManager = new ApplicationActivationManager();//Class not registered
+            //result = appActiveManager.ActivateApplication(appName, null, ActivateOptions.None, out processId).ToInt32();
+            //Console.WriteLine("Direct Com Wrapper result : " + result + " -> App launched with process id " + processId);
             TouchInjector.InitializeTouchInjection(10, TouchFeedback.INDIRECT);
             // Wait for app to initialize
             new ManualResetEvent(false).WaitOne(1000);

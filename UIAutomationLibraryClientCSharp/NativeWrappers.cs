@@ -4,6 +4,15 @@ using System.Runtime.InteropServices;
 namespace NativeWrappers
 {
 
+    public class Mine
+    {
+        [DllImport("UIAutomationLibrary.dll", EntryPoint = "SimulateSwipe", CallingConvention = CallingConvention.StdCall)]
+        public static extern int SimulateSwipeNative();
+
+        [DllImport("UIAutomationLibrary.dll", EntryPoint = "launchApp", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.StdCall)]
+        //public static extern IntPtr launchApp(string appIdentifier, UIntPtr processId);
+        public static extern int launchApp([InAttribute()] [MarshalAs(UnmanagedType.LPWStr)] string strAppUserModelId, ref uint processId);
+    }
 
     /// <summary>
     /// Use this Classes static methods to initialize and inject touch input.

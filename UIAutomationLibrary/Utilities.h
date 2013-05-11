@@ -15,11 +15,13 @@
 #include <memory>
 #include <ShObjIdl.h>
 #include <atlbase.h>
+#include <vector>
 
 namespace UIAutomationLibrary {
     namespace Utilities {
         HRESULT UIAUTOMATIONLIBRARY_API launchApp(const std::wstring& appIdentifier, PDWORD processID);
         //HRESULT UIAUTOMATIONLIBRARY_API launchApp(const wchar_t* appIdentifier, PDWORD processID);
+        std::vector<HWND> getWindows(DWORD processId);
     };
 
     enum ActivateOptions
